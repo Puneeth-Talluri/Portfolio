@@ -15,6 +15,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     email: "",
     message: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; error?: string } | null>(null);
 
   const heading = useTypingAnimation("CONTACT", 50, 0);
   const contactInfo = useTypingAnimation(
@@ -27,9 +29,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
-    // You can add actual form submission logic here
+    // noop: wired below with async submit
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -37,6 +37,32 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const submitForm = async () => {
+    setIsSubmitting(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        setResult({ ok: true });
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        const errorText = typeof json?.error === "string"
+          ? json.error
+          : json?.error?.message ?? "Failed to send";
+        setResult({ ok: false, error: errorText });
+      }
+    } catch (err: any) {
+      setResult({ ok: false, error: err?.message || "Network error" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,10 +84,10 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
         </div>
 
         {/* Content Container */}
-        <div className="flex gap-8 h-[calc(100%-140px)]">
+        <div className="flex gap-8 h-[calc(100%-140px)] overflow-y-auto pr-2">
           {/* Left Side - Form */}
           <div className="flex-1">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={(e) => { e.preventDefault(); submitForm(); }} className="space-y-6 pb-12">
               {/* Name Input */}
               <div>
                 <label className="block text-white/60 font-mono text-xs uppercase tracking-[0.2em] mb-2">
@@ -113,10 +139,18 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="glass-button px-8 py-3 bg-transparent border border-white/60 text-white font-mono text-sm uppercase tracking-[0.25em] hover:bg-white/5 hover:border-cyan-400 transition-all duration-300"
+                disabled={isSubmitting}
+                className={`glass-button px-8 py-3 bg-transparent border border-white/60 text-white font-mono text-sm uppercase tracking-[0.25em] transition-all duration-300 ${isSubmitting ? "opacity-60 cursor-not-allowed" : "hover:bg-white/5 hover:border-cyan-400"}`}
               >
-                >>> SEND
+                {isSubmitting ? ">>> SENDING" : ">>> SEND"}
               </button>
+
+              {result?.ok && (
+                <p className="text-cyan-400 font-mono text-xs mt-2">Message sent! I’ll get back to you soon.</p>
+              )}
+              {result?.ok === false && (
+                <p className="text-red-400 font-mono text-xs mt-2">{result.error}</p>
+              )}
             </form>
           </div>
 
@@ -133,7 +167,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     EMAIL
                   </p>
                   <p className="text-white/80 font-mono text-xs">
-                    puneethtalluri05@gmail.com
+                    talluripuneeth@gmail.com
                   </p>
                 </div>
 
@@ -183,7 +217,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   rel="noopener noreferrer"
                   className="block text-white/60 font-mono text-xs hover:text-white transition-colors"
                 >
-                  > GitHub
+                  &gt; GitHub
                 </a>
                 <a 
                   href="https://www.linkedin.com/in/puneeth-talluri" 
@@ -191,7 +225,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   rel="noopener noreferrer"
                   className="block text-white/60 font-mono text-xs hover:text-white transition-colors"
                 >
-                  > LinkedIn
+                  &gt; LinkedIn
                 </a>
               </div>
             </div>
