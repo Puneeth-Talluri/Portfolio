@@ -237,10 +237,7 @@ export default function CareerModal({ isOpen, onClose }: CareerModalProps) {
           </div>
         </div>
 
-        {/* System Active Indicator */}
-        <div className="absolute bottom-6 left-8 text-white/40 font-mono text-xs uppercase tracking-[0.2em]">
-          COGNITIVE SYSTEM ACTIVE
-        </div>
+        
       </div>
     </div>
   );

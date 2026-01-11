@@ -16,6 +16,7 @@ export default function ExpertiseModal({ isOpen, onClose }: ExpertiseModalProps)
   const heading = useTypingAnimation("EXPERTISE", 50, 0);
 
   const categoryTitles = {
+    ai: useTypingAnimation("Artificial Intelligence", 30, heading.isComplete ? 100 : 99999),
     languages: useTypingAnimation("Languages & Frameworks", 30, heading.isComplete ? 200 : 99999),
     webTech: useTypingAnimation("Web & UI Technologies", 30, heading.isComplete ? 400 : 99999),
     cloud: useTypingAnimation("Cloud & Platforms", 30, heading.isComplete ? 600 : 99999),
@@ -41,6 +42,7 @@ export default function ExpertiseModal({ isOpen, onClose }: ExpertiseModalProps)
   if (!isOpen) return null;
 
   const skills = {
+    ai: ["LangChain", "LangGraph"],
     languages: ["Java", "Python", "JavaScript", "C++", "TypeScript", "C#"],
     frameworks: ["Spring Boot", "Node.js", "React.js", "Redux"],
     webTech: ["HTML", "CSS", "XML", "Bootstrap"],
@@ -50,9 +52,11 @@ export default function ExpertiseModal({ isOpen, onClose }: ExpertiseModalProps)
     automation: ["JUnit", "Selenium", "Postman", "Cucumber"],
     devops: ["Azure DevOps", "Git", "GitHub Actions", "Terraform", "Kubernetes", "Maven"],
     enterprise: ["Power Platform", "Dynamics 365", "Power Apps"]
+    
   };
 
   const allSkills = [
+    ...skills.ai,
     ...skills.languages,
     ...skills.frameworks,
     ...skills.webTech,
@@ -61,7 +65,8 @@ export default function ExpertiseModal({ isOpen, onClose }: ExpertiseModalProps)
     ...skills.apis,
     ...skills.automation,
     ...skills.devops,
-    ...skills.enterprise
+    ...skills.enterprise,
+
   ];
 
   return (
@@ -81,6 +86,33 @@ export default function ExpertiseModal({ isOpen, onClose }: ExpertiseModalProps)
         {/* Skills Grid */}
         <div className="h-[calc(100%-150px)] overflow-y-auto pr-4">
           <div className="space-y-8">
+            <div>
+              <h3 className="text-cyan-400 font-mono text-sm uppercase tracking-[0.25em] mb-4">
+                {categoryTitles.ai.displayedText}
+                {!categoryTitles.ai.isComplete && <span className="animate-pulse">|</span>}
+              </h3>
+              {categoryTitles.ai.isComplete && (
+                <div className="grid grid-cols-3 gap-4">
+                  {skills.ai.map((skill, i) => {
+                    const globalIndex = allSkills.indexOf(skill);
+                    const isVisible = visibleSkills > globalIndex;
+                    return (
+                      <div
+                        key={i}
+                        className={`border border-white/20 p-3 hover:border-cyan-400/50 transition-all duration-300 ${
+                          isVisible ? 'opacity-100' : 'opacity-0'
+                        }`}
+                      >
+                        <p className="text-white font-mono text-xs uppercase tracking-wider text-center">
+                          ◆ {skill}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* Languages & Frameworks */}
             <div>
               <h3 className="text-cyan-400 font-mono text-sm uppercase tracking-[0.25em] mb-4">
@@ -304,13 +336,12 @@ export default function ExpertiseModal({ isOpen, onClose }: ExpertiseModalProps)
                 </div>
               )}
             </div>
+
+            
           </div>
         </div>
 
-        {/* System Active Indicator */}
-        <div className="absolute bottom-6 left-8 text-white/40 font-mono text-xs uppercase tracking-[0.2em]">
-          COGNITIVE SYSTEM ACTIVE
-        </div>
+        
       </div>
     </div>
   );
