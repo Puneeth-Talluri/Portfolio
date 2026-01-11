@@ -72,7 +72,7 @@ export default function CareerModal({ isOpen, onClose }: CareerModalProps) {
 
   // Animated line ref to ensure the draw animation plays reliably
   const pathRef = useRef<SVGPathElement>(null);
-  const lineDuration = 6; // seconds
+  const lineDuration = 3; // seconds
   const showDots = false; // toggle to show/hide timeline dots
   useEffect(() => {
     if (!isOpen) return;

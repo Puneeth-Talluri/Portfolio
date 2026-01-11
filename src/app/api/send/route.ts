@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import ContactEmail from "@/components/email/ContactEmail";
-const HARDCODED_RESEND_API_KEY = "re_bRLh5TTD_B7yMZzFWv1Y1LJTMc3vYV1vX";
 
 export async function POST(req: Request) {
   try {
@@ -10,9 +9,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const apiKey =
-      HARDCODED_RESEND_API_KEY !== "re_bRLh5TTD_B7yMZzFWv1Y1LJTMc3vYV1vX" ? HARDCODED_RESEND_API_KEY : process.env.RESEND_API_KEY;
-    if (!apiKey) {
+    const apiKey = process.env.RESEND_API_KEY ?? "";
+    if (!apiKey.trim()) {
       return NextResponse.json({ error: "Missing Resend API key" }, { status: 500 });
     }
     const resend = new Resend(apiKey);
