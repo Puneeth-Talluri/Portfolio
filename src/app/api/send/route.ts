@@ -2,14 +2,18 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import ContactEmail from "@/components/email/ContactEmail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: Request) {
   try {
     const { name, email, message } = await req.json();
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: "Missing RESEND_API_KEY environment variable" }, { status: 500 });
+    }
+    const resend = new Resend(apiKey);
 
     const { data, error } = await resend.emails.send({
       from: "Portfolio <onboarding@resend.dev>",
