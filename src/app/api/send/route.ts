@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     }
 
     const apiKey =
-      HARDCODED_RESEND_API_KEY !== "YOUR_RESEND_API_KEY" ? HARDCODED_RESEND_API_KEY : process.env.RESEND_API_KEY;
+      HARDCODED_RESEND_API_KEY !== "re_bRLh5TTD_B7yMZzFWv1Y1LJTMc3vYV1vX" ? HARDCODED_RESEND_API_KEY : process.env.RESEND_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: "Missing Resend API key" }, { status: 500 });
     }
